@@ -1,0 +1,17 @@
+git clone https://github.com/wass08/r3f-vite-starter.git
+npm i
+npm audit fix 
+npm install react@19.0.0 react-dom@19.0.0
+rd -Recurse -Force node_modules\.vite
+npm run dev
+
+create the avatar from the ReadyPlayer.me and get the glb file and after getting it place it whereven you want then run
+npx gltfjsx filpath/filename.glb  itll create the react componetnt for the avatar which we can use 
+https://models.readyplayer.me/687a9bf8fc0f8b803d0be2c1.glb  
+
+after running it'll create a js or jsx file in the root directory just take it and paste it in the Avatar.jsx in componetnts folder for consistency and make the necessary changes accordingly like the function name and the path
+
+npm i leva // to use conditional for the movement
+
+then for styling use tailwind css so download that and postcss
+
