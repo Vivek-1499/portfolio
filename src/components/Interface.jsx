@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   DiCss3Full,
   DiHtml5,
@@ -27,13 +28,26 @@ const skills = [
   { name: "GitHub", icon: FaGithub },
 ];
 const Section = (props) => {
-  const { children } = props;
+  const { children, sectionId } = props;
 
   return (
-    <section
-      className={`h-screen w-screen p-8  max-w-screen-2xl mx-auto flex flex-col items-start justify-center text-white `}>
+    <motion.section
+    id={sectionId}
+      className={`h-screen w-screen p-8  max-w-screen-2xl mx-auto flex flex-col items-start justify-center text-white `}
+      initial={{
+        opacity: 0,
+        y: 50,
+      }}
+      whileInView={{
+        opacity: 1,
+        y: 0,
+        transition: {
+          duration: 1,
+          delay: 0.2,
+        },
+      }}>
       {children}
-    </section>
+    </motion.section>
   );
 };
 
@@ -42,7 +56,7 @@ const Interface = () => {
     <div className="flex flex-col items-center w-screen ">
       <AboutSection />
       <SkillSection />
-      <Section>
+      <Section sectionId="projects">
         <h1 className="text-5xl font-bold text-violet-400 drop-shadow-lg">
           Projects
         </h1>
@@ -53,7 +67,7 @@ const Interface = () => {
 };
 const AboutSection = () => {
   return (
-    <Section>
+    <Section sectionId="about">
       <h1 className="text-6xl font-extrabold leading-tight text-center text-indigo-500 drop-shadow-md">
         Hi, I'm
       </h1>
@@ -61,23 +75,48 @@ const AboutSection = () => {
         Vivek Pandit
       </span>
 
-      <p className="text-lg text-gray-300 mt-6 text-center max-w-xl">
+      <motion.p
+        className="text-lg text-gray-300 mt-6 text-center max-w-xl"
+        initial={{
+          opacity: 0,
+          y: 25,
+        }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 1,
+          delay: 1,
+        }}>
         Pursuing <i className="text-indigo-400">B.Tech in IT</i> from{" "}
         <i className="text-indigo-300">K.J. Somaiya College of Engineering</i>,
         passionate about creating immersive full-stack experiences and 3D web
         interfaces.
-      </p>
+      </motion.p>
 
-      <button className="mt-12 bg-indigo-600 hover:bg-indigo-700 transition duration-300 text-white py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl hover:cursor-pointer">
+      <motion.button className="mt-12 bg-indigo-600 hover:bg-indigo-700 transition duration-300 text-white py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl hover:cursor-pointer"
+      initial={{
+          opacity: 0,
+          y: 10,
+        }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 1,
+          delay: 1.5,
+        }}>
         Contact Me
-      </button>
+      </motion.button>
     </Section>
   );
 };
 
 const SkillSection = () => {
   return (
-    <Section>
+    <Section sectionId="skills">
       <h1 className="text-5xl font-bold text-cyan-400 mb-10 drop-shadow-lg">
         Skills
       </h1>
@@ -121,7 +160,7 @@ const SkillSection = () => {
 
 const ContactSection = () => {
   return (
-    <Section > 
+    <Section sectionId="contact">
       <form action="" className="bg-black px-10 py-2 rounded-sm">
         <h2 className="text-3xl font-extrabold text-indigo-800 ">Contact Me</h2>
         <div className="py-2 w-fit">
@@ -141,8 +180,14 @@ const ContactSection = () => {
           </div>
           <div className="flex flex-col py-2 ">
             <label htmlFor="name">Message</label>
-            <textarea name="" id="" className="bg-gray-900 rounded-sm"></textarea>
-          </div> 
+            <textarea
+              name=""
+              id=""
+              className="bg-gray-900 rounded-sm"></textarea>
+          </div>
+          <button className="mx-auto bg-indigo-950 py-2 px-5 rounded-lg mt-2">
+            Send
+          </button>
         </div>
       </form>
     </Section>
