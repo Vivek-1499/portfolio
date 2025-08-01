@@ -12,16 +12,10 @@ import * as THREE from "three";
 
 export function Avatar(props) {
   const { animation } = props;
-  const { headFollow, cursorFollow } = useControls({
-    headFollow: false,
-    cursorFollow: false,
-  });
   const group = useRef();
   const { scene } = useGLTF("models/model.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone);
-
-  const [animationsLoaded, setAnimationsLoaded] = useState(false);
 
   const { animations: waving } = useFBX("animations/Waving.fbx");
   const { animations: bored } = useFBX("animations/Bored.fbx");
@@ -51,61 +45,88 @@ export function Avatar(props) {
 
   const { actions } = useAnimations(namedAnimations, group);
 
-  useEffect(() => {
-    if (namedAnimations.length > 0 && !animationsLoaded) {
-      setAnimationsLoaded(true);
-    }
-  }, [namedAnimations, animationsLoaded]);
+  // useEffect(() => {
+  //   if (namedAnimations.length > 0 && !animationsLoaded) {
+  //     setAnimationsLoaded(true);
+  //   }
+  // }, [namedAnimations, animationsLoaded]);
+
+  // useFrame((state) => {
+  //   if (!group.current) return;
+
+  //   if (headFollow) {
+  //     const head = group.current.getObjectByName("Head");
+  //     if (head) {
+  //       head.lookAt(state.camera.position);
+  //       head.rotation.z = 0;
+  //       head.rotation.x = Math.max(-0.5, Math.min(0.5, head.rotation.x));
+  //     }
+  //   }
+
+  //   if (cursorFollow) {
+  //     const targetBone = group.current.getObjectByName("Head");
+
+  //     if (targetBone) {
+  //       const mouseX = state.pointer.x;
+  //       const mouseY = state.pointer.y;
+
+  //       const targetPosition = new THREE.Vector3(
+  //         mouseX * 10,
+  //         mouseY * 3 + 0,
+  //         5
+  //       );
+  //       targetBone.lookAt(targetPosition);
+
+  //       targetBone.rotation.z = 0;
+  //       targetBone.rotation.x = Math.max(
+  //         -0.5,
+  //         Math.min(0.5, targetBone.rotation.x)
+  //       );
+  //     }
+  //   }
+  // });
+
+  // useEffect(() => {
+  //   if (!animationsLoaded || !actions[animation]) return;
+
+  //   const action = actions[animation];
+  //   action.reset().fadeIn(0.5).play();
+
+  //   return () => {
+  //     if (action) {
+  //       action.fadeOut(0.5);
+  //     }
+  //   };
+  // }, [animation, actions, animationsLoaded]);
+
+  // console.log(waving);
 
   useFrame((state) => {
-    if (!group.current) return;
-
-    if (headFollow) {
+    if (group.current) {
       const head = group.current.getObjectByName("Head");
       if (head) {
-        head.lookAt(state.camera.position);
+        const target = new THREE.Vector3(
+          state.pointer.x * 5,
+          state.pointer.y * 2 + 1,
+          5
+        );
+        head.lookAt(target);
         head.rotation.z = 0;
         head.rotation.x = Math.max(-0.5, Math.min(0.5, head.rotation.x));
       }
     }
-
-    if (cursorFollow) {
-      const targetBone = group.current.getObjectByName("Head");
-
-      if (targetBone) {
-        const mouseX = state.pointer.x;
-        const mouseY = state.pointer.y;
-
-        const targetPosition = new THREE.Vector3(
-          mouseX * 10,
-          mouseY * 3 + 0,
-          5
-        );
-        targetBone.lookAt(targetPosition);
-
-        targetBone.rotation.z = 0; 
-        targetBone.rotation.x = Math.max(
-          -0.5,
-          Math.min(0.5, targetBone.rotation.x)
-        ); 
-      }
-    }
   });
 
+  // Play the animation passed from props
   useEffect(() => {
-    if (!animationsLoaded || !actions[animation]) return;
-
-    const action = actions[animation];
-    action.reset().fadeIn(0.5).play();
-
-    return () => {
-      if (action) {
-        action.fadeOut(0.5);
-      }
-    };
-  }, [animation, actions, animationsLoaded]);
-
-  console.log(waving);
+    if (actions && actions[animation]) {
+      const currentAction = actions[animation];
+      Object.values(actions).forEach((action) => {
+        if (action !== currentAction) action.fadeOut(0.5);
+      });
+      currentAction.reset().fadeIn(0.5).play();
+    }
+  }, [animation, actions]);
 
   return (
     <group {...props} ref={group} dispose={null}>

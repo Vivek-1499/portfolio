@@ -6,7 +6,7 @@ import {
 } from "@react-three/drei";
 import { Avatar } from "./Avatar";
 import { useControls } from "leva";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Experience = () => {
   const { animation } = useControls({
@@ -16,13 +16,45 @@ export const Experience = () => {
     },
   });
   const avatarRef = useRef();
+  const [currentAnimation, setCurrentAnimation] = useState("Waving");
+  useEffect(() => {
+    let timeoutId;
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const newScrollY = window.scrollY;
+
+      if (newScrollY !== lastScrollY) {
+        setCurrentAnimation("Walking");
+
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          setCurrentAnimation("Standing");
+        }, 2000); // After 2s of no scroll, switch to bored
+      }
+
+      lastScrollY = newScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Start with waving, then switch to bored after 5s
+    const wavingTimer = setTimeout(() => {
+      setCurrentAnimation("Standing");
+    }, 2000);
+
+    return () => {
+      clearTimeout(wavingTimer);
+      clearTimeout(timeoutId);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   return (
     <>
       <ambientLight intensity={2} />
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}t5dxv
         position={[0, -1, 0]}
-        position-y={-0.001}
         receiveShadow>
         <planeGeometry args={[20, 20]} />
         <shadowMaterial opacity={0.5} transparent color="#000000" />
@@ -36,7 +68,7 @@ export const Experience = () => {
           resolution={256}
           color="#000000"
         />
-        <Avatar animation={animation} ref={avatarRef} />
+        <Avatar animation={currentAnimation} ref={avatarRef} />
       </group>
     </>
   );

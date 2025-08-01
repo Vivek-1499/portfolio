@@ -32,7 +32,7 @@ const Section = (props) => {
 
   return (
     <motion.section
-    id={sectionId}
+      id={sectionId}
       className={`h-screen w-screen p-8  max-w-screen-2xl mx-auto flex flex-col items-start justify-center text-white `}
       initial={{
         opacity: 0,
@@ -95,8 +95,9 @@ const AboutSection = () => {
         interfaces.
       </motion.p>
 
-      <motion.button className="mt-12 bg-indigo-600 hover:bg-indigo-700 transition duration-300 text-white py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl hover:cursor-pointer"
-      initial={{
+      <motion.button
+        className="mt-12 bg-indigo-600 hover:bg-indigo-700 transition duration-300 text-white py-3 px-8 rounded-lg text-lg shadow-lg hover:shadow-xl hover:cursor-pointer"
+        initial={{
           opacity: 0,
           y: 10,
         }}
@@ -107,7 +108,14 @@ const AboutSection = () => {
         transition={{
           duration: 1,
           delay: 1.5,
-        }}>
+        }}
+        onClick={(e) => {
+  e.preventDefault();
+  document.getElementById("contact")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}}>
         Contact Me
       </motion.button>
     </Section>

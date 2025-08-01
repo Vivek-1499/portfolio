@@ -15,7 +15,7 @@ function App() {
       <Canvas
         shadows
         gl={{ antialias: true }}
-        camera={{ position: [0, 2, 5], fov: 30 }}>
+        camera={{ position: [0, 2, 5], fov: 30 }}z>
         <color attach="background" args={["#1a1a1a"]} />
         <ScrollControls pages={4} damping={0.1}>
           <ScrollManager section={section} onSectionChange={setSection} />
