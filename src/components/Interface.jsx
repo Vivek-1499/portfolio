@@ -56,11 +56,7 @@ const Interface = () => {
     <div className="flex flex-col items-center w-screen ">
       <AboutSection />
       <SkillSection />
-      <Section sectionId="projects">
-        <h1 className="text-5xl font-bold text-violet-400 drop-shadow-lg">
-          Projects
-        </h1>
-      </Section>
+      <ProjectsSection />
       <ContactSection />
     </div>
   );
@@ -110,12 +106,12 @@ const AboutSection = () => {
           delay: 1.5,
         }}
         onClick={(e) => {
-  e.preventDefault();
-  document.getElementById("contact")?.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-}}>
+          e.preventDefault();
+          document.getElementById("contact")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }}>
         Contact Me
       </motion.button>
     </Section>
@@ -161,6 +157,21 @@ const SkillSection = () => {
             ))}
           </div>
         </div>
+      </div>
+    </Section>
+  );
+};
+
+const ProjectsSection = () => {
+  return (
+    <Section sectionId="projects">
+      <div className="flex flex-col items-center justify-center h-full w-full">
+        <h1 className="text-5xl font-bold text-violet-400 drop-shadow-lg text-center mb-4">
+          Projects
+        </h1>
+        <p className="text-lg text-gray-300">
+          Interact with the 3D book to explore my work.
+        </p>
       </div>
     </Section>
   );

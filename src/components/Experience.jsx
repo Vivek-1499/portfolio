@@ -7,6 +7,7 @@ import {
 import { Avatar } from "./Avatar";
 import { useControls } from "leva";
 import { useEffect, useRef, useState } from "react";
+import { ProjectBook } from "./ProjectBook";
 
 export const Experience = () => {
   const { animation } = useControls({
@@ -52,6 +53,7 @@ export const Experience = () => {
   return (
     <>
       <ambientLight intensity={2} />
+      <directionalLight position={[-5, 5, 5]} intensity={1.5} castShadow />
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}t5dxv
         position={[0, -1, 0]}
@@ -69,6 +71,7 @@ export const Experience = () => {
           color="#000000"
         />
         <Avatar animation={currentAnimation} ref={avatarRef} />
+        <ProjectBook position={[3, 0, 0]}/>
       </group>
     </>
   );
