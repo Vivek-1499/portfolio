@@ -9,6 +9,7 @@ import {
   DiReact,
 } from "react-icons/di";
 import { FaDatabase, FaGitAlt, FaGithub, FaFigma } from "react-icons/fa";
+import { UI } from "./UI";
 
 const languages = [
   { name: "Java", icon: DiJava },
@@ -27,9 +28,7 @@ const skills = [
   { name: "Git", icon: FaGitAlt },
   { name: "GitHub", icon: FaGithub },
 ];
-const Section = (props) => {
-  const { children, sectionId } = props;
-
+const Section = ({ children, sectionId }) => {
   return (
     <motion.section
       id={sectionId}
@@ -51,12 +50,12 @@ const Section = (props) => {
   );
 };
 
-const Interface = () => {
+const Interface = ({ section }) => {
   return (
     <div className="flex flex-col items-center w-screen ">
       <AboutSection />
       <SkillSection />
-      <ProjectsSection />
+      <ProjectsSection activeSection={section} />
       <ContactSection />
     </div>
   );
@@ -162,20 +161,20 @@ const SkillSection = () => {
   );
 };
 
-const ProjectsSection = () => {
+
+function ProjectsSection({ activeSection }) {
   return (
     <Section sectionId="projects">
-      <div className="flex flex-col items-center justify-center h-full w-full">
-        <h1 className="text-5xl font-bold text-violet-400 drop-shadow-lg text-center mb-4">
-          Projects
-        </h1>
-        <p className="text-lg text-gray-300">
-          Interact with the 3D book to explore my work.
-        </p>
-      </div>
+      <h1 className="text-5xl font-bold text-violet-400 mb-4">Projects</h1>
+      <p className="text-lg text-gray-300 mb-8 text-center max-w-xl">
+        Interact with the 3D book to explore my work.
+      </p>
+        <div className="w-full max-w-full h-[600px] relative">
+          <UI />
+        </div>
     </Section>
   );
-};
+}
 
 const ContactSection = () => {
   return (

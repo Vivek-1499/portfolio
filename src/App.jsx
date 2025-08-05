@@ -1,8 +1,8 @@
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
-import { Scroll, ScrollControls } from "@react-three/drei";
+import { Loader, Scroll, ScrollControls } from "@react-three/drei";
 import Interface from "./components/Interface";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import ScrollManager from "./components/ScrollManager";
 import Menu from "./components/Menu";
 
@@ -21,10 +21,11 @@ function App() {
           <ScrollManager section={section} onSectionChange={setSection} />
           <Experience section={section} />
           <Scroll html>
-            <Interface />
+            <Interface section={section} />
           </Scroll>
         </ScrollControls>
       </Canvas>
+      <Loader />
     </>
   );
 }
