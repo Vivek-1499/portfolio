@@ -51,7 +51,7 @@ export const UI = () => {
           {[...pages].map((_, index) => (
             <button
               key={index}
-              className={`border-transparent hover:border-white transition-all duration-300 px-4 py-2 rounded-full text-base uppercase shrink-0 border ${
+              className={`border-transparent hover:border-white transition-all duration-300 px-4 py-2 rounded-full text-base uppercase shrink-0 border  ${
                 index === page
                   ? "bg-white/90 text-black"
                   : "bg-black/30 text-white"
@@ -61,7 +61,7 @@ export const UI = () => {
             </button>
           ))}
           <button
-            className={`border-transparent hover:border-white transition-all duration-300 px-4 py-2 rounded-full text-base uppercase shrink-0 border ${
+            className={`border-transparent hover:border-white transition-all duration-300 px-4 py-2 rounded-full text-base uppercase shrink-0 border hidden ${
               page === pages.length
                 ? "bg-white/90 text-black"
                 : "bg-black/30 text-white"

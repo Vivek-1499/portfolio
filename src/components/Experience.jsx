@@ -1,6 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
-import { ContactShadows, Environment } from "@react-three/drei";
+import {
+  ContactShadows,
+  Environment,
+  Float,
+  PresentationControls,
+} from "@react-three/drei";
 import { Avatar } from "./Avatar";
 import ProjectBook from "./ProjectBook";
 import * as THREE from "three";
@@ -9,18 +14,15 @@ export const Experience = ({ section }) => {
   const avatarRef = useRef();
   const bookRef = useRef();
 
-  // State to manage the avatar's animation sequence
   const [animation, setAnimation] = useState("Waving");
 
-  // On first load, wave for 2 seconds, then switch to Standing.
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimation("Standing");
     }, 2000);
-    return () => clearTimeout(timer); // Cleanup timeout on unmount
+    return () => clearTimeout(timer);
   }, []);
 
-  // Determine the correct animation based on state and scroll section
   const sectionAnimation = section === 2 ? "Reading" : "Standing";
   const finalAnimation = animation === "Waving" ? "Waving" : sectionAnimation;
 
@@ -31,17 +33,13 @@ export const Experience = ({ section }) => {
     if (!avatar || !book) return;
 
     if (section === 2) {
-      // Projects section: Avatar moves left, book appears right
       avatar.position.x = THREE.MathUtils.lerp(avatar.position.x, -1.5, 0.05);
-      book.position.y = THREE.MathUtils.lerp(book.position.y, 0, 0.05);
-      book.position.x = THREE.MathUtils.lerp(book.position.x, 1.5, 0.05);
-      book.rotation.y = THREE.MathUtils.lerp(book.rotation.y, -Math.PI / 8, 0.05);
+      book.position.y = THREE.MathUtils.lerp(book.position.y, 1, 0.05);
+      book.position.x = THREE.MathUtils.lerp(book.position.x, 0.5, 0.05);
     } else {
-      // Other sections: Avatar is centered, book is hidden
       avatar.position.x = THREE.MathUtils.lerp(avatar.position.x, 0, 0.05);
       book.position.y = THREE.MathUtils.lerp(book.position.y, -3, 0.05);
       book.position.x = THREE.MathUtils.lerp(book.position.x, 0, 0.05);
-      book.rotation.y = THREE.MathUtils.lerp(book.rotation.y, 0, 0.05);
     }
   });
 
@@ -49,11 +47,7 @@ export const Experience = ({ section }) => {
     <>
       <ambientLight intensity={2} />
       <directionalLight position={[-5, 5, 5]} intensity={1.5} castShadow />
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -1, 0]}
-        receiveShadow
-      >
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
         <planeGeometry args={[20, 20]} />
         <shadowMaterial opacity={0.5} transparent color="#000000" />
       </mesh>
@@ -73,7 +67,22 @@ export const Experience = ({ section }) => {
         </group>
 
         <group ref={bookRef} position-y={-5}>
-          <ProjectBook />
+          
+          <PresentationControls
+            snap={false}
+            speed={2}
+            azimuth={[-Infinity, Infinity]}
+            polar={[0, Math.PI]}
+            cursor={true}>
+            <group rotation={[-Math.PI / 12, Math.PI / 8, 0]}>
+            <Float rotation-x={-Math.PI / 4}
+            floatIntensity={0.5}
+            speed={1}
+            rotationIntensity={1}>
+              <ProjectBook />
+              </Float>
+            </group>
+          </PresentationControls>
         </group>
       </group>
     </>
