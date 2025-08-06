@@ -24,8 +24,8 @@ const insideCurveStrength = 0.15;
 const outsideCurveStrength = 0.02;
 const turningCurveStrength = 0.04;
 
-const PAGE_WIDTH = 1.28;
-const PAGE_HEIGHT = 1.71;
+const PAGE_WIDTH = 1.90;
+const PAGE_HEIGHT = 2.11;
 const PAGE_DEPTH = 0.003;
 const PAGE_SEGMENTS = 30;
 const SEGMENT_WIDTH = PAGE_WIDTH / PAGE_SEGMENTS;

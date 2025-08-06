@@ -33,11 +33,17 @@ export const Experience = ({ section }) => {
     if (!avatar || !book) return;
 
     if (section === 2) {
-      avatar.position.x = THREE.MathUtils.lerp(avatar.position.x, -1.5, 0.05);
-      book.position.y = THREE.MathUtils.lerp(book.position.y, 1, 0.05);
+      avatar.position.x = THREE.MathUtils.lerp(avatar.position.x, -2.2, 0.05);
+      avatar.rotation.y = THREE.MathUtils.lerp(
+        avatar.rotation.y,
+        Math.PI / 2 / 2,
+        0.05
+      );
+      book.position.y = THREE.MathUtils.lerp(book.position.y, 0.7, 0.05);
       book.position.x = THREE.MathUtils.lerp(book.position.x, 0.5, 0.05);
     } else {
       avatar.position.x = THREE.MathUtils.lerp(avatar.position.x, 0, 0.05);
+      avatar.rotation.y = THREE.MathUtils.lerp(avatar.rotation.y, 0, 0.05);
       book.position.y = THREE.MathUtils.lerp(book.position.y, -3, 0.05);
       book.position.x = THREE.MathUtils.lerp(book.position.x, 0, 0.05);
     }
@@ -67,7 +73,6 @@ export const Experience = ({ section }) => {
         </group>
 
         <group ref={bookRef} position-y={-5}>
-          
           <PresentationControls
             snap={false}
             speed={2}
@@ -75,11 +80,12 @@ export const Experience = ({ section }) => {
             polar={[0, Math.PI]}
             cursor={true}>
             <group rotation={[-Math.PI / 12, Math.PI / 8, 0]}>
-            <Float rotation-x={-Math.PI / 4}
-            floatIntensity={0.5}
-            speed={1}
-            rotationIntensity={1}>
-              <ProjectBook />
+              <Float
+                rotation-x={-Math.PI / 4}
+                floatIntensity={0.3}
+                speed={1}
+                rotationIntensity={0.5}>
+                <ProjectBook />
               </Float>
             </group>
           </PresentationControls>
