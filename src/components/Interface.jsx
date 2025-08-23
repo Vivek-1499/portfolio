@@ -9,7 +9,6 @@ import {
   DiReact,
 } from "react-icons/di";
 import { FaDatabase, FaGitAlt, FaGithub, FaFigma } from "react-icons/fa";
-import { UI } from "./UI";
 
 const languages = [
   { name: "Java", icon: DiJava },
@@ -28,11 +27,12 @@ const skills = [
   { name: "Git", icon: FaGitAlt },
   { name: "GitHub", icon: FaGithub },
 ];
+
 const Section = ({ children, sectionId }) => {
   return (
     <motion.section
       id={sectionId}
-      className={`h-screen w-screen p-8  max-w-screen-2xl mx-auto flex flex-col items-start justify-center text-white `}
+      className={`h-screen w-screen p-8 max-w-screen-2xl mx-auto flex flex-col items-start justify-center text-white`}
       initial={{
         opacity: 0,
         y: 50,
@@ -52,14 +52,15 @@ const Section = ({ children, sectionId }) => {
 
 const Interface = ({ section }) => {
   return (
-    <div className="flex flex-col items-center w-screen ">
+    <div className="flex flex-col items-center w-screen">
       <AboutSection />
       <SkillSection />
-      <ProjectsSection activeSection={section} />
+      <ProjectsSection />
       <ContactSection />
     </div>
   );
 };
+
 const AboutSection = () => {
   return (
     <Section sectionId="about">
@@ -161,17 +162,47 @@ const SkillSection = () => {
   );
 };
 
-
-function ProjectsSection({ activeSection }) {
+function ProjectsSection() {
   return (
     <Section sectionId="projects">
       <h1 className="text-5xl font-bold text-violet-400 mb-4">Projects</h1>
-      <p className="text-lg text-gray-300 mb-8 text-center max-w-xl">
-        Interact with the 3D book to explore my work.
-      </p>
-        <div className="w-full max-w-full h-[600px] relative">
-          <UI />
+      <motion.p 
+        className="text-lg text-gray-300 mb-8 text-center max-w-xl mx-auto"
+        initial={{
+          opacity: 0,
+          y: 25,
+        }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 1,
+          delay: 0.5,
+        }}>
+      </motion.p>
+      
+      <motion.div 
+        className="text-center mt-8"
+        initial={{
+          opacity: 0,
+          y: 25,
+        }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 1,
+          delay: 0.8,
+        }}>
+        <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 border border-white/20">
+          <span className="text-indigo-300 text-sm font-medium">💡 Tip:</span>
+          <span className="text-white/80 text-sm">
+            The book contains interactive project showcases with GitHub links and live demos
+          </span>
         </div>
+      </motion.div>
     </Section>
   );
 }
@@ -179,36 +210,45 @@ function ProjectsSection({ activeSection }) {
 const ContactSection = () => {
   return (
     <Section sectionId="contact">
-      <form action="" className="bg-black px-10 py-2 rounded-sm">
-        <h2 className="text-3xl font-extrabold text-indigo-800 ">Contact Me</h2>
-        <div className="py-2 w-fit">
-          <div className="flex flex-col py-2 ">
-            <label htmlFor="name">Name</label>
+      <form action="" className="bg-black/50 backdrop-blur-sm px-10 py-8 rounded-lg border border-white/20">
+        <h2 className="text-3xl font-extrabold text-indigo-400 mb-6">Contact Me</h2>
+        <div className="w-full max-w-md">
+          <div className="flex flex-col py-3">
+            <label htmlFor="name" className="text-white/80 mb-2">Name</label>
             <input
               type="text"
-              className="border-0 focus:border-indigo-950 bg-gray-900 rounded-sm "
+              id="name"
+              className="border border-white/20 focus:border-indigo-400 bg-white/10 backdrop-blur-sm rounded-md px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
+              placeholder="Your name"
             />
           </div>
-          <div className="flex flex-col py-2 ">
-            <label htmlFor="name">Email</label>
+          <div className="flex flex-col py-3">
+            <label htmlFor="email" className="text-white/80 mb-2">Email</label>
             <input
               type="email"
-              className="border-0 focus:border-indigo-950 bg-gray-900 rounded-sm "
+              id="email"
+              className="border border-white/20 focus:border-indigo-400 bg-white/10 backdrop-blur-sm rounded-md px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
+              placeholder="your.email@example.com"
             />
           </div>
-          <div className="flex flex-col py-2 ">
-            <label htmlFor="name">Message</label>
+          <div className="flex flex-col py-3">
+            <label htmlFor="message" className="text-white/80 mb-2">Message</label>
             <textarea
-              name=""
-              id=""
-              className="bg-gray-900 rounded-sm"></textarea>
+              id="message"
+              rows="4"
+              className="border border-white/20 focus:border-indigo-400 bg-white/10 backdrop-blur-sm rounded-md px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 resize-none"
+              placeholder="Your message here...">
+            </textarea>
           </div>
-          <button className="mx-auto bg-indigo-950 py-2 px-5 rounded-lg mt-2">
-            Send
+          <button 
+            type="submit"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 transition duration-300 text-white py-3 px-6 rounded-lg mt-4 font-medium shadow-lg hover:shadow-xl">
+            Send Message
           </button>
         </div>
       </form>
     </Section>
   );
 };
+
 export default Interface;

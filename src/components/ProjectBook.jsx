@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { pageAtom, pages } from "./UI";
+import { pageAtom, pages, projectsData } from "./UI";
 import {
   Bone,
   BoxGeometry,
@@ -11,12 +11,15 @@ import {
   SRGBColorSpace,
   Uint16BufferAttribute,
   Vector3,
+  CanvasTexture,
+  TextureLoader,
 } from "three";
 import { useCursor, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { useAtom } from "jotai";
 import { easing } from "maath";
+import { Html } from "@react-three/drei";
 
 const easingFactor = 0.5;
 const easingFactorFold = 0.3;
@@ -24,7 +27,7 @@ const insideCurveStrength = 0.15;
 const outsideCurveStrength = 0.02;
 const turningCurveStrength = 0.04;
 
-const PAGE_WIDTH = 1.90;
+const PAGE_WIDTH = 1.9;
 const PAGE_HEIGHT = 2.11;
 const PAGE_DEPTH = 0.003;
 const PAGE_SEGMENTS = 30;
@@ -73,25 +76,401 @@ const pageMaterials = [
   new MeshStandardMaterial({ color: whiteColor }),
 ];
 
-pages.forEach((page) => {
-  useTexture.preload(`/images/${page.front}.png`);
-  useTexture.preload(`/images/${page.back}.png`);
-  useTexture.preload(`/images/image2.png`);
-});
+// Function to create text texture
+const createTextTexture = (content, type, pageData) => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = 1024;
+  canvas.height = 1024;
 
-const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
-  const [picture, picture2, pictureRoughness] = useTexture([
-    `/images/${front}.png`,
-    `/images/${back}.png`,
-    ...(number === 0 || number === pages.length - 1
-      ? [`/images/image2.png`]
-      : []),
-  ]);
-  picture.colorSpace = picture2.colorSpace = SRGBColorSpace;
+  // Dark background for all pages
+  ctx.fillStyle = "#2d3748"; // Dark gray
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (type === "cover") {
+    // Cover page design - darker
+    ctx.fillStyle = "#1a202c";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Title
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 80px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("MY PROJECTS", canvas.width / 2, 300);
+
+    // Subtitle
+    ctx.fillStyle = "#a0aec0";
+    ctx.font = "32px Arial";
+    ctx.fillText("Interactive Portfolio", canvas.width / 2, 380);
+
+    // Instructions
+    ctx.fillStyle = "#718096";
+    ctx.font = "24px Arial";
+    ctx.textAlign = "left";
+    const instructions = [
+      "How to Navigate:",
+      "• Click and drag to rotate",
+      "• Click pages to flip",
+      "• Each project has details & links",
+    ];
+
+    instructions.forEach((line, i) => {
+      ctx.fillText(line, 150, 500 + i * 40);
+    });
+  } else if (
+    type.startsWith("project-") &&
+    type.includes("-info") &&
+    pageData?.project
+  ) {
+    // Project info page (left side) - MORE DETAILED CONTENT
+    const project = pageData.project;
+
+    let yPos = 60;
+
+    // Project title
+    ctx.fillStyle = "#63b3ed";
+    ctx.font = "bold 48px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText(project.title, 60, yPos);
+    yPos += 80;
+
+    // Description
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "26px Arial";
+    const words = project.description.split(" ");
+    let line = "";
+    const maxWidth = canvas.width - 120;
+
+    for (let i = 0; i < words.length; i++) {
+      const testLine = line + words[i] + " ";
+      const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
+
+      if (testWidth > maxWidth && i > 0) {
+        ctx.fillText(line, 60, yPos);
+        line = words[i] + " ";
+        yPos += 38;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, 60, yPos);
+    yPos += 70;
+
+    // Technologies
+    ctx.fillStyle = "#9f7aea";
+    ctx.font = "bold 32px Arial";
+    ctx.fillText("Technologies:", 60, yPos);
+    yPos += 55;
+
+    ctx.fillStyle = "#e2e8f0";
+    ctx.font = "24px Arial";
+    project.technologies.forEach((tech, i) => {
+      ctx.fillText(`• ${tech}`, 80, yPos);
+      yPos += 40;
+    });
+
+    yPos += 30;
+
+    // Key Features
+    ctx.fillStyle = "#48bb78";
+    ctx.font = "bold 32px Arial";
+    ctx.fillText("Key Features:", 60, yPos);
+    yPos += 55;
+
+    ctx.fillStyle = "#e2e8f0";
+    ctx.font = "24px Arial";
+    project.features.forEach((feature, i) => {
+      // Handle long features by wrapping text
+      const words = feature.split(" ");
+      let line = "";
+      const maxWidth = canvas.width - 140;
+
+      for (let j = 0; j < words.length; j++) {
+        const testLine = line + words[j] + " ";
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+
+        if (testWidth > maxWidth && j > 0) {
+          ctx.fillText(`• ${line}`, 80, yPos);
+          line = words[j] + " ";
+          yPos += 35;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(`• ${line}`, 80, yPos);
+      yPos += 35;
+    });
+  } else if (
+    type.startsWith("project-") &&
+    type.includes("-image") &&
+    pageData?.project
+  ) {
+    // Project image page (right side) - SIMPLIFIED WITH JUST IMAGE AND LINKS
+    const project = pageData.project;
+
+    // Background
+    ctx.fillStyle = "#2d3748";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Image placeholder area (larger)
+    const imageArea = {
+      x: 60,
+      y: 60,
+      width: canvas.width - 120,
+      height: 500,
+    };
+
+    // Try to load actual image, fallback to placeholder
+    ctx.fillStyle = "#4a5568";
+    ctx.fillRect(imageArea.x, imageArea.y, imageArea.width, imageArea.height);
+    ctx.strokeStyle = "#718096";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(imageArea.x, imageArea.y, imageArea.width, imageArea.height);
+
+    // Placeholder content
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 32px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(
+      "Project Screenshot",
+      canvas.width / 2,
+      imageArea.y + imageArea.height / 2 - 20
+    );
+
+    ctx.fillStyle = "#a0aec0";
+    ctx.font = "24px Arial";
+    ctx.fillText(
+      project.title,
+      canvas.width / 2,
+      imageArea.y + imageArea.height / 2 + 20
+    );
+
+    let yPos = imageArea.y + imageArea.height + 80;
+
+    // Links section
+    ctx.fillStyle = "#f56565";
+    ctx.font = "bold 36px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText("Project Links:", 60, yPos);
+    yPos += 70;
+
+    // GitHub link box
+    const linkHeight = 90;
+    const linkMargin = 20;
+
+    ctx.fillStyle = "#4a5568";
+    ctx.fillRect(60, yPos, canvas.width - 120, linkHeight);
+    ctx.strokeStyle = "#718096";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(60, yPos, canvas.width - 120, linkHeight);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 28px Arial";
+    ctx.fillText("📁 View Source Code", 100, yPos + 35);
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "#cbd5e0";
+    ctx.fillText("GitHub Repository", 100, yPos + 65);
+    yPos += linkHeight + linkMargin;
+
+    // Live demo link box
+    ctx.fillStyle = "#3182ce";
+    ctx.fillRect(60, yPos, canvas.width - 120, linkHeight);
+    ctx.strokeStyle = "#4299e1";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(60, yPos, canvas.width - 120, linkHeight);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 28px Arial";
+    ctx.fillText("🌐 Live Demo", 100, yPos + 35);
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "#bee3f8";
+    ctx.fillText("Visit Application", 100, yPos + 65);
+  } else if (type === "back-cover") {
+    // Back cover
+    ctx.fillStyle = "#1a202c";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 64px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Thank You!", canvas.width / 2, 400);
+
+    ctx.fillStyle = "#a0aec0";
+    ctx.font = "32px Arial";
+    ctx.fillText("For exploring my projects", canvas.width / 2, 480);
+  } else if (type === "contact-info") {
+    // Contact info
+    ctx.fillStyle = "#2d3748";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#0bc5ea";
+    ctx.font = "bold 48px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Let's Connect!", canvas.width / 2, 250);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "32px Arial";
+    ctx.textAlign = "left";
+    const contactInfo = [
+      "📧 vivek@example.com",
+      "💼 linkedin.com/in/vivekpandit",
+      "🐙 github.com/vivekpandit",
+      "🌐 vivekpandit.dev",
+    ];
+
+    contactInfo.forEach((line, i) => {
+      ctx.fillText(line, 150, 350 + i * 60);
+    });
+  } else if (type === "back-cover-final") {
+    // Final back cover
+    ctx.fillStyle = "#1a202c";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 64px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Portfolio", canvas.width / 2, 400);
+
+    ctx.fillStyle = "#a0aec0";
+    ctx.font = "32px Arial";
+    ctx.fillText("Vivek Pandit", canvas.width / 2, 480);
+
+    ctx.fillStyle = "#718096";
+    ctx.font = "24px Arial";
+    ctx.fillText("Full Stack Developer", canvas.width / 2, 520);
+  }
+
+  return new CanvasTexture(canvas);
+};
+
+// Function to create image texture from URL
+const createImageTexture = (imageUrl, project) => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = 1024;
+  canvas.height = 1024;
+
+  // Dark background
+  ctx.fillStyle = "#2d3748";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Try to load the image
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+
+  img.onload = () => {
+    // Clear canvas
+    ctx.fillStyle = "#2d3748";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Calculate image dimensions to fit nicely
+    const imageArea = {
+      x: 60,
+      y: 60,
+      width: canvas.width - 120,
+      height: 500,
+    };
+
+    // Draw the image
+    ctx.drawImage(
+      img,
+      imageArea.x,
+      imageArea.y,
+      imageArea.width,
+      imageArea.height
+    );
+
+    // Add project info below image
+    let yPos = imageArea.y + imageArea.height + 60;
+
+    // Links section
+    ctx.fillStyle = "#f56565";
+    ctx.font = "bold 36px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText("Project Links:", 60, yPos);
+    yPos += 70;
+
+    // GitHub link box
+    const linkHeight = 90;
+    const linkMargin = 20;
+
+    ctx.fillStyle = "#4a5568";
+    ctx.fillRect(60, yPos, canvas.width - 120, linkHeight);
+    ctx.strokeStyle = "#718096";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(60, yPos, canvas.width - 120, linkHeight);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 28px Arial";
+    ctx.fillText("📁 View Source Code", 100, yPos + 35);
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "#cbd5e0";
+    ctx.fillText("GitHub Repository", 100, yPos + 65);
+    yPos += linkHeight + linkMargin;
+
+    // Live demo link box
+    ctx.fillStyle = "#3182ce";
+    ctx.fillRect(60, yPos, canvas.width - 120, linkHeight);
+    ctx.strokeStyle = "#4299e1";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(60, yPos, canvas.width - 120, linkHeight);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 28px Arial";
+    ctx.fillText("🌐 Live Demo", 100, yPos + 35);
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "#bee3f8";
+    ctx.fillText("Visit Application", 100, yPos + 65);
+  };
+
+  img.onerror = () => {
+    // Fallback to placeholder if image fails to load
+    console.log("Failed to load image:", imageUrl);
+  };
+
+  // Set the source - this will trigger onload or onerror
+  img.src = imageUrl;
+
+  return new CanvasTexture(canvas);
+};
+
+const Page = ({
+  number,
+  front,
+  back,
+  page,
+  opened,
+  bookClosed,
+  pageData,
+  ...props
+}) => {
   const group = useRef();
   const turnedAt = useRef(0);
   const lastOpened = useRef(opened);
   const skinnedMeshRef = useRef();
+
+  // Create textures based on page content
+  const frontTexture = useMemo(() => {
+    if (front.includes("-image") && pageData?.project) {
+      return createImageTexture(pageData.project.image, pageData.project);
+    }
+    return createTextTexture(front, front, pageData);
+  }, [front, pageData]);
+
+  const backTexture = useMemo(() => {
+    if (back.includes("-image") && pageData?.nextProject) {
+      return createImageTexture(
+        pageData.nextProject.image,
+        pageData.nextProject
+      );
+    }
+    return createTextTexture(back, back, {
+      ...pageData,
+      project: pageData?.nextProject || pageData?.project,
+    });
+  }, [back, pageData]);
 
   const manualSkinnedMesh = useMemo(() => {
     const bones = [];
@@ -108,17 +487,13 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
       ...pageMaterials,
       new MeshStandardMaterial({
         color: whiteColor,
-        map: picture,
-        ...(number === 0
-          ? { roughnessMap: pictureRoughness }
-          : { roughness: 0.1 }),
+        map: frontTexture,
+        roughness: 0.1,
       }),
       new MeshStandardMaterial({
         color: whiteColor,
-        map: picture2,
-        ...(number === pages.length - 1
-          ? { roughnessMap: pictureRoughness }
-          : { roughness: 0.1 }),
+        map: backTexture,
+        roughness: 0.1,
       }),
     ];
     const mesh = new SkinnedMesh(pageGeometry, materials);
@@ -127,7 +502,7 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
     mesh.add(bones[0]);
     mesh.bind(skeleton);
     return mesh;
-  }, []);
+  }, [frontTexture, backTexture]);
 
   useFrame((_, delta) => {
     if (!skinnedMeshRef.current) return;
@@ -136,7 +511,7 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
       turnedAt.current = +new Date();
       lastOpened.current = opened;
     }
-    
+
     let turningTime = Math.min(400, new Date() - turnedAt.current) / 400;
     turningTime = Math.sin(turningTime * Math.PI);
 
@@ -152,28 +527,42 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
       const outsideCurveIntensity = i >= 8 ? Math.cos(i * 0.3 + 0.09) : 0;
       const turningIntensity =
         Math.sin(i * Math.PI * (1 / bones.length)) * turningTime;
-        
+
       let rotationAngle =
         insideCurveStrength * insideCurveIntensity * targetRotation -
         outsideCurveStrength * outsideCurveIntensity * targetRotation +
         turningCurveStrength * turningIntensity * targetRotation;
-        
+
       let foldRotationAngle = degToRad(Math.sign(targetRotation) * 2);
       if (bookClosed) {
         if (i === 0) {
-            rotationAngle = targetRotation;
-        } else { 
-            rotationAngle = 0;
+          rotationAngle = targetRotation;
+        } else {
+          rotationAngle = 0;
         }
         foldRotationAngle = 0;
       }
-      
-      easing.dampAngle(target.rotation, "y", rotationAngle, easingFactor, delta);
+
+      easing.dampAngle(
+        target.rotation,
+        "y",
+        rotationAngle,
+        easingFactor,
+        delta
+      );
 
       const foldIntensity =
-        i > 8 ? Math.sin(i * Math.PI * (1 / bones.length) - 0.5) * turningTime : 0;
-        
-      easing.dampAngle(target.rotation, "x", foldRotationAngle * foldIntensity, easingFactorFold, delta);
+        i > 8
+          ? Math.sin(i * Math.PI * (1 / bones.length) - 0.5) * turningTime
+          : 0;
+
+      easing.dampAngle(
+        target.rotation,
+        "x",
+        foldRotationAngle * foldIntensity,
+        easingFactorFold,
+        delta
+      );
     }
   });
 
@@ -197,13 +586,40 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
         e.stopPropagation();
         setPage(opened ? number : number + 1);
         setHighLighted(false);
-      }}
-    >
+      }}>
       <primitive
         object={manualSkinnedMesh}
         ref={skinnedMeshRef}
         position-z={-number * PAGE_DEPTH + page * PAGE_DEPTH}
       />
+
+      {/* ✅ Add clickable links when this is an image page */}
+      {front.includes("-image") && pageData?.project && (
+        <Html
+          transform
+          distanceFactor={1.3}
+          position={[0.95, -0.8, 0.01]} // adjust to align with page
+          style={{ width: "250px", textAlign: "left" }}>
+          <div className="flex flex-col gap-2 bg-black/70 p-3 rounded-lg">
+            {pageData.project.id && (
+              <a
+                href={`/projects/${pageData.project.id}`}
+                className="underline text-purple-400">
+                📑 Details Page
+              </a>
+            )}
+            {pageData.project.liveUrl && (
+              <a
+                href={pageData.project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-green-400">
+                🌐 Live Demo
+              </a>
+            )}
+          </div>
+        </Html>
+      )}
     </group>
   );
 };
@@ -219,9 +635,12 @@ const ProjectBook = ({ ...props }) => {
         if (page === currentDelayedPage) {
           return currentDelayedPage;
         }
-        
-        timeout = setTimeout(goToPage, Math.abs(page - currentDelayedPage) > 2 ? 50 : 150);
-        
+
+        timeout = setTimeout(
+          goToPage,
+          Math.abs(page - currentDelayedPage) > 2 ? 50 : 150
+        );
+
         if (page > currentDelayedPage) {
           return currentDelayedPage + 1;
         } else {
@@ -229,9 +648,9 @@ const ProjectBook = ({ ...props }) => {
         }
       });
     };
-    
+
     goToPage();
-    
+
     return () => {
       clearTimeout(timeout);
     };
@@ -245,11 +664,11 @@ const ProjectBook = ({ ...props }) => {
           page={delayedPage}
           number={index}
           opened={delayedPage > index}
+          pageData={pageData}
           {...pageData}
         />
       ))}
     </group>
   );
 };
-
 export default ProjectBook;

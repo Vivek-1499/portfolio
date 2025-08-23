@@ -5,9 +5,12 @@ import Interface from "./components/Interface";
 import { Suspense, useState } from "react";
 import ScrollManager from "./components/ScrollManager";
 import Menu from "./components/Menu";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ProjectDetails from "./components/ProjectDetails";
 
-function App() {
+function Home() {
   const [section, setSection] = useState(0);
+
   return (
     <>
       <Menu onSectionChange={setSection} section={section} />
@@ -15,7 +18,8 @@ function App() {
       <Canvas
         shadows
         gl={{ antialias: true }}
-        camera={{ position: [0, 2, 5], fov: 30 }}>
+        camera={{ position: [0, 2, 5], fov: 30 }}
+      >
         <color attach="background" args={["#1a1a1a"]} />
         <ScrollControls pages={4} damping={0.1}>
           <ScrollManager section={section} onSectionChange={setSection} />
@@ -25,8 +29,20 @@ function App() {
           </Scroll>
         </ScrollControls>
       </Canvas>
+
       <Loader />
     </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/projects/:id" element={<ProjectDetails />} />
+      </Routes>
+    </Router>
   );
 }
 
