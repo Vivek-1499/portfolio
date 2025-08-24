@@ -17,9 +17,10 @@ export const projectsData = [
       "Admin panel for product management",
       "Responsive design"
     ],
-    moreUrl: "/projects/ecommerce",
+    moreUrl: "/project/1",
     liveUrl: "https://your-ecommerce-demo.com",
-    image: "/images/image4.png" // Updated to use actual image path
+    githubUrl: "https://github.com/vivekpandit/ecommerce-platform",
+    image: "/images/image4.png"
   },
   {
     id: 2,
@@ -33,8 +34,9 @@ export const projectsData = [
       "Progress tracking",
       "Mobile responsive"
     ],
-    moreUrl: "/projects/task",
+    moreUrl: "/project/2",
     liveUrl: "https://your-taskmanager-demo.com",
+    githubUrl: "https://github.com/vivekpandit/task-management-app",
     image: "/images/image1.png"
   },
   {
@@ -49,8 +51,9 @@ export const projectsData = [
       "Weather analytics",
       "Offline support"
     ],
-    moreUrl: "/projects/weather" ,
+    moreUrl: "/project/3",
     liveUrl: "https://your-weather-demo.com",
+    githubUrl: "https://github.com/vivekpandit/weather-dashboard",
     image: "/images/image2.png"
   },
   {
@@ -65,8 +68,9 @@ export const projectsData = [
       "User engagement tracking",
       "Export functionality"
     ],
-    moreUrl: "/projects/social" ,
+    moreUrl: "/project/4",
     liveUrl: "https://your-social-demo.com",
+    githubUrl: "https://github.com/vivekpandit/social-media-dashboard",
     image: "/images/image4.png"
   }
 ];

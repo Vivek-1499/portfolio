@@ -20,6 +20,7 @@ import { degToRad } from "three/src/math/MathUtils.js";
 import { useAtom } from "jotai";
 import { easing } from "maath";
 import { Html } from "@react-three/drei";
+import { useNavigate } from "react-router-dom";
 
 const easingFactor = 0.5;
 const easingFactorFold = 0.3;
@@ -450,6 +451,7 @@ const Page = ({
   const turnedAt = useRef(0);
   const lastOpened = useRef(opened);
   const skinnedMeshRef = useRef();
+  const navigate = useNavigate();
 
   // Create textures based on page content
   const frontTexture = useMemo(() => {
@@ -570,6 +572,27 @@ const Page = ({
   const [highlighted, setHighLighted] = useState(false);
   useCursor(highlighted);
 
+  // Handle link clicks
+  const handleProjectDetailsClick = (e, projectId) => {
+    e.stopPropagation();
+    navigate(`/project/${projectId}`);
+  };
+
+  const handleLiveDemoClick = (e, url) => {
+    e.stopPropagation();
+    window.open(url, '_blank');
+  };
+
+  const handleGithubClick = (e, url) => {
+    e.stopPropagation();
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      // Fallback to a generic github profile if no specific repo
+      window.open('https://github.com/vivekpandit', '_blank');
+    }
+  };
+
   return (
     <group
       {...props}
@@ -593,29 +616,44 @@ const Page = ({
         position-z={-number * PAGE_DEPTH + page * PAGE_DEPTH}
       />
 
-      {/* ✅ Add clickable links when this is an image page */}
+      {/* Interactive links for project pages */}
       {front.includes("-image") && pageData?.project && (
         <Html
           transform
-          distanceFactor={1.3}
-          position={[0.95, -0.8, 0.01]} // adjust to align with page
-          style={{ width: "250px", textAlign: "left" }}>
-          <div className="flex flex-col gap-2 bg-black/70 p-3 rounded-lg">
-            {pageData.project.id && (
-              <a
-                href={`/projects/${pageData.project.id}`}
-                className="underline text-purple-400">
-                📑 Details Page
-              </a>
+          distanceFactor={1.5}
+          position={[0.8, -0.7, 0.02]}
+          style={{ pointerEvents: 'auto' }}>
+          <div className="flex flex-col gap-3 bg-black/80 backdrop-blur-sm p-4 rounded-lg border border-white/30 shadow-2xl min-w-[200px]">
+            <h3 className="text-white font-semibold text-sm mb-2 border-b border-white/20 pb-2">
+              {pageData.project.title}
+            </h3>
+            
+            <button
+              onClick={(e) => handleProjectDetailsClick(e, pageData.project.id)}
+              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-md text-xs transition-all duration-200 hover:scale-105 active:scale-95"
+            >
+              <span>📑</span>
+              <span>View Details</span>
+            </button>
+            
+            {pageData.project.githubUrl && (
+              <button
+                onClick={(e) => handleGithubClick(e, pageData.project.githubUrl)}
+                className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-md text-xs transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                <span>📁</span>
+                <span>Source Code</span>
+              </button>
             )}
+            
             {pageData.project.liveUrl && (
-              <a
-                href={pageData.project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-green-400">
-                🌐 Live Demo
-              </a>
+              <button
+                onClick={(e) => handleLiveDemoClick(e, pageData.project.liveUrl)}
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-xs transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                <span>🌐</span>
+                <span>Live Demo</span>
+              </button>
             )}
           </div>
         </Html>
