@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { projectsData } from "./UI";
 import { FaArrowLeft, FaExternalLinkAlt, FaGithub, FaLightbulb, FaCode, FaUsers } from "react-icons/fa";
+import { projectsData } from "../../data/projectsData";
 
 export default function ProjectDetails() {
   const { id } = useParams();

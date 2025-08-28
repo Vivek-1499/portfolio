@@ -197,10 +197,7 @@ function ProjectsSection() {
           delay: 0.8,
         }}>
         <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 border border-white/20">
-          <span className="text-indigo-300 text-sm font-medium">💡 Tip:</span>
-          <span className="text-white/80 text-sm">
-            The book contains interactive project showcases with GitHub links and live demos
-          </span>
+          <span className="text-indigo-300 text-sm font-medium">Welcome to my project section: </span>
         </div>
       </motion.div>
     </Section>

@@ -1,83 +1,8 @@
 import { atom, useAtom } from "jotai";
 import { useState } from "react";
-
+import { projectsData } from "../../data/projectsData";
 export const pageAtom = atom(0);
-
-// Projects data - Add your actual projects here
-export const projectsData = [
-  {
-    id: 1,
-    title: "E-Commerce Platform",
-    description: "A full-stack e-commerce solution built with React, Node.js, and MongoDB. Features include user authentication, shopping cart, payment integration, and admin dashboard.",
-    technologies: ["React", "Node.js", "MongoDB", "Stripe", "JWT"],
-    features: [
-      "User authentication & authorization",
-      "Shopping cart functionality", 
-      "Payment processing with Stripe",
-      "Admin panel for product management",
-      "Responsive design"
-    ],
-    moreUrl: "/project/1",
-    liveUrl: "https://your-ecommerce-demo.com",
-    githubUrl: "https://github.com/vivekpandit/ecommerce-platform",
-    image: "/images/image4.png"
-  },
-  {
-    id: 2,
-    title: "Task Management App",
-    description: "A collaborative task management application with real-time updates, drag-and-drop functionality, and team collaboration features.",
-    technologies: ["React", "TypeScript", "Firebase", "Material-UI"],
-    features: [
-      "Real-time collaboration",
-      "Drag & drop task management",
-      "Team workspaces",
-      "Progress tracking",
-      "Mobile responsive"
-    ],
-    moreUrl: "/project/2",
-    liveUrl: "https://your-taskmanager-demo.com",
-    githubUrl: "https://github.com/vivekpandit/task-management-app",
-    image: "/images/image1.png"
-  },
-  {
-    id: 3,
-    title: "Weather Dashboard",
-    description: "A modern weather application with location-based forecasts, interactive maps, and detailed weather analytics.",
-    technologies: ["Vue.js", "OpenWeatherMap API", "Chart.js", "Tailwind CSS"],
-    features: [
-      "Location-based weather",
-      "7-day forecast",
-      "Interactive weather maps",
-      "Weather analytics",
-      "Offline support"
-    ],
-    moreUrl: "/project/3",
-    liveUrl: "https://your-weather-demo.com",
-    githubUrl: "https://github.com/vivekpandit/weather-dashboard",
-    image: "/images/image2.png"
-  },
-  {
-    id: 4,
-    title: "Social Media Dashboard",
-    description: "Analytics dashboard for social media management with data visualization and automated reporting features.",
-    technologies: ["Python", "Django", "React", "D3.js", "PostgreSQL"],
-    features: [
-      "Multi-platform analytics",
-      "Automated reporting",
-      "Custom data visualizations",
-      "User engagement tracking",
-      "Export functionality"
-    ],
-    moreUrl: "/project/4",
-    liveUrl: "https://your-social-demo.com",
-    githubUrl: "https://github.com/vivekpandit/social-media-dashboard",
-    image: "/images/image4.png"
-  }
-];
-
-// Create pages structure for the book - MODIFIED STRUCTURE
 export const pages = [
-  // Cover page (same as before)
   {
     type: "cover",
     front: "cover",
