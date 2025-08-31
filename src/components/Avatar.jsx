@@ -22,6 +22,7 @@ export function Avatar(props) {
   const { animations: reading } = useFBX("animations/Reading.fbx");
   const { animations: standing } = useFBX("animations/Standing.fbx");
   const { animations: walking } = useFBX("animations/Walking.fbx");
+  const { animations: talking } = useFBX("animations/Talking.fbx");
 
   const namedAnimations = React.useMemo(() => {
     if (
@@ -29,7 +30,8 @@ export function Avatar(props) {
       !bored?.[0] ||
       !reading?.[0] ||
       !standing?.[0] ||
-      !walking?.[0]
+      !walking?.[0] ||
+      !talking?.[0]
     ) {
       return [];
     }
@@ -39,9 +41,10 @@ export function Avatar(props) {
     reading[0].name = "Reading";
     standing[0].name = "Standing";
     walking[0].name = "Walking";
+    talking[0].name = "Talking";
 
-    return [waving[0], bored[0], reading[0], standing[0], walking[0]];
-  }, [waving, bored, reading, standing, walking]);
+    return [waving[0], bored[0], reading[0], standing[0], walking[0], talking[0]];
+  }, [waving, bored, reading, standing, walking, talking]);
 
   const { actions } = useAnimations(namedAnimations, group);
 

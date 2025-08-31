@@ -23,7 +23,13 @@ export const Experience = ({ section }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const sectionAnimation = section === 2 ? "Reading" : "Standing";
+  let sectionAnimation ="Standing";
+  if(section === 2){
+    sectionAnimation = "Reading"
+  }
+  else {
+    sectionAnimation = "Standing"
+  }
   const finalAnimation = animation === "Waving" ? "Waving" : sectionAnimation;
 
   useFrame(() => {
@@ -41,10 +47,15 @@ export const Experience = ({ section }) => {
       );
       book.position.y = THREE.MathUtils.lerp(book.position.y, 0.7, 0.05);
       book.position.x = THREE.MathUtils.lerp(book.position.x, 0.5, 0.05);
-    } else {
+    } else if(section === 3){
+      avatar.position.x = THREE.MathUtils.lerp(avatar.position.x, -0.7, 0.05);
+      avatar.rotation.y = THREE.MathUtils.lerp(avatar.rotation.y, 0.05, 0.05);
+      book.position.y = THREE.MathUtils.lerp(book.position.y, -4, 0.05);
+      book.position.x = THREE.MathUtils.lerp(book.position.x, 0, 0.05);
+    }else {
       avatar.position.x = THREE.MathUtils.lerp(avatar.position.x, 0, 0.05);
       avatar.rotation.y = THREE.MathUtils.lerp(avatar.rotation.y, 0, 0.05);
-      book.position.y = THREE.MathUtils.lerp(book.position.y, -3, 0.05);
+      book.position.y = THREE.MathUtils.lerp(book.position.y, -4, 0.05);
       book.position.x = THREE.MathUtils.lerp(book.position.x, 0, 0.05);
     }
   });
