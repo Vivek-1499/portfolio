@@ -1,7 +1,9 @@
 import { atom, useAtom } from "jotai";
 import { useState } from "react";
 import { projectsData } from "../../data/projectsData";
+
 export const pageAtom = atom(0);
+
 export const pages = [
   {
     type: "cover",
@@ -74,10 +76,15 @@ export const UI = () => {
                     ? "bg-indigo-500 text-white"
                     : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
                 }`}
-                onClick={() => setPage(index)}>
-                {pageData.type === "cover" ? "Cover" : 
-                 pageData.type === "project" ? `P${pageData.projectId}` :
-                 pageData.type === "back-cover" ? "End" : `${index}`}
+                onClick={() => setPage(index)}
+                title={
+                  pageData.type === "cover" ? "Cover Page" : 
+                  pageData.type === "project" ? `${pageData.project?.title || 'Project'}` :
+                  pageData.type === "back-cover" ? "Contact & End" : `Page ${index}`
+                }>
+                {pageData.type === "cover" ? "📖" : 
+                 pageData.type === "project" ? `${pageData.projectId}` :
+                 pageData.type === "back-cover" ? "📞" : `${index}`}
               </button>
             ))}
           </div>
@@ -88,7 +95,7 @@ export const UI = () => {
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 pointer-events-auto">
         <div className="bg-black/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/20">
           <p className="text-white/80 text-sm text-center">
-            Click and drag to rotate the book • Click pages to navigate • Explore project details
+            🖱️ Click and drag to rotate • 📄 Click pages to navigate • 🔗 Use project links on the left
           </p>
         </div>
       </div>

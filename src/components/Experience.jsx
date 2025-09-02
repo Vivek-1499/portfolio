@@ -9,8 +9,10 @@ import {
 import { Avatar } from "./Avatar";
 import ProjectBook from "./ProjectBook";
 import * as THREE from "three";
+import FloatingProjectLinks from "./FloatingProjectLinks";
+import { BookProjectLinks } from "./ProjectBookLinks";
 
-export const Experience = ({ section }) => {
+export const Experience = ({ section, currentPage }) => {
   const avatarRef = useRef();
   const bookRef = useRef();
 
@@ -23,12 +25,11 @@ export const Experience = ({ section }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  let sectionAnimation ="Standing";
-  if(section === 2){
-    sectionAnimation = "Reading"
-  }
-  else {
-    sectionAnimation = "Standing"
+  let sectionAnimation = "Standing";
+  if (section === 2) {
+    sectionAnimation = "Reading";
+  } else {
+    sectionAnimation = "Standing";
   }
   const finalAnimation = animation === "Waving" ? "Waving" : sectionAnimation;
 
@@ -47,12 +48,12 @@ export const Experience = ({ section }) => {
       );
       book.position.y = THREE.MathUtils.lerp(book.position.y, 0.7, 0.05);
       book.position.x = THREE.MathUtils.lerp(book.position.x, 0.5, 0.05);
-    } else if(section === 3){
+    } else if (section === 3) {
       avatar.position.x = THREE.MathUtils.lerp(avatar.position.x, -0.7, 0.05);
       avatar.rotation.y = THREE.MathUtils.lerp(avatar.rotation.y, 0.05, 0.05);
       book.position.y = THREE.MathUtils.lerp(book.position.y, -4, 0.05);
       book.position.x = THREE.MathUtils.lerp(book.position.x, 0, 0.05);
-    }else {
+    } else {
       avatar.position.x = THREE.MathUtils.lerp(avatar.position.x, 0, 0.05);
       avatar.rotation.y = THREE.MathUtils.lerp(avatar.rotation.y, 0, 0.05);
       book.position.y = THREE.MathUtils.lerp(book.position.y, -4, 0.05);
@@ -97,6 +98,7 @@ export const Experience = ({ section }) => {
                 speed={1}
                 rotationIntensity={0.5}>
                 <ProjectBook />
+                <BookProjectLinks/>
               </Float>
             </group>
           </PresentationControls>

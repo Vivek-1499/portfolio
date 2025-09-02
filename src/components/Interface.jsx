@@ -8,7 +8,7 @@ import {
   DiPython,
   DiReact,
 } from "react-icons/di";
-import { FaDatabase, FaGitAlt, FaGithub, FaFigma } from "react-icons/fa";
+import { FaDatabase, FaGitAlt, FaGithub, FaFigma, FaMousePointer } from "react-icons/fa";
 
 const languages = [
   { name: "Java", icon: DiJava },
@@ -195,10 +195,18 @@ function ProjectsSection() {
           duration: 1,
           delay: 0.8,
         }}>
-        <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 border border-white/20">
-          <span className="text-indigo-300 text-sm font-medium">
-            Welcome to my project section:{" "}
-          </span>
+        <div className="inline-flex flex-col items-center gap-4 bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 border border-white/20">
+          <div className="flex items-center gap-2 mb-2">
+            <FaMousePointer className="text-cyan-400" size={16} />
+            <span className="text-white font-medium text-sm">
+              Navigation Tips
+            </span>
+          </div>
+          <div className="text-gray-300 text-xs space-y-1">
+            <p>• Use project links on the left</p>
+            <p>• Click book pages to flip</p>
+            <p>• Drag to rotate the book</p>
+          </div>
         </div>
       </motion.div>
     </Section>
