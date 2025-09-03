@@ -91,14 +91,7 @@ export const UI = () => {
         </div>
       </div>
 
-      {/* Instructions */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 pointer-events-auto">
-        <div className="bg-black/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/20">
-          <p className="text-white/80 text-sm text-center">
-            🖱️ Click and drag to rotate • 📄 Click pages to navigate • 🔗 Use project links on the left
-          </p>
-        </div>
-      </div>
+      
     </div>
   );
 };

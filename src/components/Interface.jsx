@@ -202,7 +202,7 @@ function ProjectsSection() {
               Navigation Tips
             </span>
           </div>
-          <div className="text-gray-300 text-xs space-y-1">
+          <div className="text-gray-300 text-xs space-y-1 items-start">
             <p>• Use project links on the left</p>
             <p>• Click book pages to flip</p>
             <p>• Drag to rotate the book</p>

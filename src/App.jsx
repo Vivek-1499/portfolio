@@ -15,6 +15,47 @@ import SoMoDetails from "./components/SoMoDetsils";
 import CodeGeniusDetails from "./components/CodeGeniusDetails";
 import DashboardDetails from "./components/DashboardDetails";
 
+// Add global CSS for smooth scrolling
+const globalStyles = `
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Custom scrollbar for project detail pages */
+  .project-detail-page::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .project-detail-page::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  
+  .project-detail-page::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+  
+  .project-detail-page::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+`;
+
+// Inject global styles
+if (typeof document !== "undefined") {
+  const existingStyle = document.getElementById("global-app-styles");
+  if (!existingStyle) {
+    const style = document.createElement("style");
+    style.id = "global-app-styles";
+    style.textContent = globalStyles;
+    document.head.appendChild(style);
+  }
+}
+
 function Home() {
   const [section, setSection] = useState(0);
   const [page] = useAtom(pageAtom);
@@ -23,7 +64,7 @@ function Home() {
     <>
       <Menu onSectionChange={setSection} section={section} />   
 
-      <FloatingProjectLinks section={section} currentPage={page} />   
+      {/* Removed FloatingProjectLinks since links are now embedded in the book */}
 
       <Canvas
         shadows

@@ -23,29 +23,6 @@ import { Html } from "@react-three/drei";
 import { useNavigate } from "react-router-dom";
 import { projectsData } from "../../data/projectsData";
 
-// Add CSS for book links
-const bookLinksStyle = `
-  .book-links-wrapper {
-    pointer-events: auto !important;
-    z-index: 9999 !important;
-  }
-  .book-links-wrapper button {
-    pointer-events: auto !important;
-    cursor: pointer !important;
-  }
-`;
-
-// Inject CSS
-if (typeof document !== "undefined") {
-  const existingStyle = document.getElementById("book-links-style");
-  if (!existingStyle) {
-    const style = document.createElement("style");
-    style.id = "book-links-style";
-    style.textContent = bookLinksStyle;
-    document.head.appendChild(style);
-  }
-}
-
 const easingFactor = 0.5;
 const easingFactorFold = 0.3;
 const insideCurveStrength = 0.15;
@@ -101,7 +78,28 @@ const pageMaterials = [
   new MeshStandardMaterial({ color: whiteColor }),
 ];
 
-// Function to create text texture
+const projectButtonLayout = {
+  details: { x: 80, y: 620, width: 864, height: 80 },
+  demo: { x: 80, y: 720, width: 864, height: 80 },
+  github: { x: 80, y: 820, width: 864, height: 80 },
+};
+
+const contactLayout = {
+  email: { y: 350 - 32, height: 32, url: "mailto:vivek.pandit1499@gmail.com" },
+  linkedin: {
+    y: 410 - 32,
+    height: 32,
+    url: "https://www.linkedin.com/in/vivek-pandit-368b012a7/",
+  },
+  github: { y: 470 - 32, height: 32, url: "https://github.com/Vivek-1499" },
+  portfolio: {
+    y: 530 - 32,
+    height: 32,
+    url: "https://vivek1499-portfolio.vercel.app",
+  },
+};
+
+// Function to create text texture with embedded clickable areas
 const createTextTexture = (content, type, pageData) => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -109,7 +107,7 @@ const createTextTexture = (content, type, pageData) => {
   canvas.height = 1024;
 
   // Dark background for all pages
-  ctx.fillStyle = "#050709"; // Dark gray
+  ctx.fillStyle = "#050709";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   if (type === "cover") {
@@ -134,13 +132,14 @@ const createTextTexture = (content, type, pageData) => {
     ctx.textAlign = "left";
     const instructions = [
       "How to Navigate:",
-      "• Click and drag to rotate",
-      "• Click pages to flip",
-      "• Each project has details & links",
+      "• Click and drag to rotate book",
+      "• Click pages to flip through projects",
+      "• Click project buttons for details/links",
+      "• Each project has embedded interactions",
     ];
 
     instructions.forEach((line, i) => {
-      ctx.fillText(line, 150, 500 + i * 40);
+      ctx.fillText(line, 100, 500 + i * 40);
     });
   } else if (
     type.startsWith("project-") &&
@@ -232,148 +231,170 @@ const createTextTexture = (content, type, pageData) => {
     type.includes("-image") &&
     pageData?.project
   ) {
-    // Project image page (right side) - SIMPLIFIED WITH JUST IMAGE AND LINKS
+    // Project image page (right side) - WITH EMBEDDED INTERACTIVE BUTTONS
     const project = pageData.project;
 
     // Background
     ctx.fillStyle = "#050709";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Image placeholder area (larger)
+    // Image placeholder area
     const imageArea = {
       x: 60,
       y: 60,
       width: canvas.width - 120,
-      height: 500,
+      height: 400,
     };
 
-    // Try to load actual image, fallback to placeholder
-    if (project.image) {
-      // Synchronous drawImage is not possible, so we use a workaround:
-      // We'll return a CanvasTexture with the image drawn once loaded.
-      ctx.fillStyle = "#050709";
-      ctx.fillRect(imageArea.x, imageArea.y, imageArea.width, imageArea.height);
-      ctx.strokeStyle = "#718096";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        imageArea.x,
-        imageArea.y,
-        imageArea.width,
-        imageArea.height
-      );
+    // Image placeholder
+    ctx.fillStyle = "#4a5568";
+    ctx.fillRect(imageArea.x, imageArea.y, imageArea.width, imageArea.height);
+    ctx.strokeStyle = "#718096";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(imageArea.x, imageArea.y, imageArea.width, imageArea.height);
 
-      // placeholder text while loading
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 32px Arial";
-      ctx.textAlign = "center";
-      ctx.fillText(
-        "Loading image...",
-        canvas.width / 2,
-        imageArea.y + imageArea.height / 2
-      );
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 32px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(
+      "Project Screenshot",
+      canvas.width / 2,
+      imageArea.y + imageArea.height / 2 - 20
+    );
 
-      // Load image asynchronously
-      const img = new window.Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        ctx.clearRect(
-          imageArea.x,
-          imageArea.y,
-          imageArea.width,
-          imageArea.height
-        );
-        ctx.drawImage(
-          img,
-          imageArea.x,
-          imageArea.y,
-          imageArea.width,
-          imageArea.height
-        );
-        // Optionally, redraw border
-        ctx.strokeStyle = "#718096";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(
-          imageArea.x,
-          imageArea.y,
-          imageArea.width,
-          imageArea.height
-        );
-        // Update the texture
-        texture.needsUpdate = true;
-      };
-      img.onerror = () => {};
-      img.src = project.image;
-    } else {
-      // Fallback placeholder
-      ctx.fillStyle = "#4a5568";
-      ctx.fillRect(imageArea.x, imageArea.y, imageArea.width, imageArea.height);
-      ctx.strokeStyle = "#718096";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        imageArea.x,
-        imageArea.y,
-        imageArea.width,
-        imageArea.height
-      );
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 32px Arial";
-      ctx.textAlign = "center";
-      ctx.fillText(
-        "Project Screenshot",
-        canvas.width / 2,
-        imageArea.y + imageArea.height / 2 - 20
-      );
-
-      ctx.fillStyle = "#a0aec0";
-      ctx.font = "24px Arial";
-      ctx.fillText(
-        project.title,
-        canvas.width / 2,
-        imageArea.y + imageArea.height / 2 + 20
-      );
-    }
+    ctx.fillStyle = "#a0aec0";
+    ctx.font = "24px Arial";
+    ctx.fillText(
+      project.title,
+      canvas.width / 2,
+      imageArea.y + imageArea.height / 2 + 20
+    );
 
     let yPos = imageArea.y + imageArea.height + 80;
 
-    // Links section
+    // Interactive Buttons Section - EMBEDDED IN CANVAS
     ctx.fillStyle = "#f56565";
     ctx.font = "bold 36px Arial";
     ctx.textAlign = "left";
-    ctx.fillText("Project Links:", 60, yPos);
-    yPos += 70;
+    ctx.fillText("🎯 Interactive Links:", 60, yPos);
+    yPos += 80;
 
-    // GitHub link box
-    const linkHeight = 90;
-    const linkMargin = 20;
+    // View Details Button
+    const detailsButton = projectButtonLayout.details;
 
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(60, yPos, canvas.width - 120, linkHeight);
-    ctx.strokeStyle = "#718096";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(60, yPos, canvas.width - 120, linkHeight);
+    // Button background with gradient effect
+    const gradient1 = ctx.createLinearGradient(
+      detailsButton.x,
+      detailsButton.y,
+      detailsButton.x,
+      detailsButton.y + detailsButton.height
+    );
+    gradient1.addColorStop(0, "#4c51bf");
+    gradient1.addColorStop(1, "#553c9a");
+    ctx.fillStyle = gradient1;
+    ctx.fillRect(
+      detailsButton.x,
+      detailsButton.y,
+      detailsButton.width,
+      detailsButton.height
+    );
 
+    // Button border
+    ctx.strokeStyle = "#667eea";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(
+      detailsButton.x,
+      detailsButton.y,
+      detailsButton.width,
+      detailsButton.height
+    );
+
+    // Button text
     ctx.fillStyle = "#ffffff";
     ctx.font = "bold 28px Arial";
-    ctx.fillText("📁 View Source Code", 100, yPos + 35);
-    ctx.font = "20px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("📑 View Full Details", canvas.width / 2, yPos + 35);
+    ctx.font = "18px Arial";
     ctx.fillStyle = "#cbd5e0";
-    ctx.fillText("GitHub Repository", 100, yPos + 65);
-    yPos += linkHeight + linkMargin;
+    ctx.fillText(
+      "Complete project breakdown",
+      canvas.width / 2,
+      detailsButton.y + 60
+    );
 
-    // Live demo link box
-    ctx.fillStyle = "#001B2F";
-    ctx.fillRect(60, yPos, canvas.width - 120, linkHeight);
-    ctx.strokeStyle = "#4299e1";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(60, yPos, canvas.width - 120, linkHeight);
+    // Live Demo Button
+    if (project.liveUrl) {
+      const demoButton = projectButtonLayout.demo;
 
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 28px Arial";
-    ctx.fillText("🌐 Live Demo", 100, yPos + 35);
-    ctx.font = "20px Arial";
-    ctx.fillStyle = "#bee3f8";
-    ctx.fillText("Visit Application", 100, yPos + 65);
+      const gradient2 = ctx.createLinearGradient(
+        demoButton.x,
+        demoButton.y,
+        demoButton.x,
+        demoButton.y + demoButton.height
+      );
+      gradient2.addColorStop(0, "#48bb78");
+      gradient2.addColorStop(1, "#38a169");
+      ctx.fillStyle = gradient2;
+      ctx.fillRect(
+        demoButton.x,
+        demoButton.y,
+        demoButton.width,
+        demoButton.height
+      );
+
+      ctx.strokeStyle = "#68d391";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(
+        demoButton.x,
+        demoButton.y,
+        demoButton.width,
+        demoButton.height
+      );
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 28px Arial";
+      ctx.fillText("🌐 Live Demo", canvas.width / 2, demoButton.y + 35);
+      ctx.font = "18px Arial";
+      ctx.fillStyle = "#f0fff4";
+      ctx.fillText("Try the application", canvas.width / 2, demoButton.y + 60);
+    }
+
+    // GitHub Button
+    if (project.githubUrl) {
+      const githubButton = projectButtonLayout.github;
+
+      const gradient3 = ctx.createLinearGradient(
+        githubButton.x,
+        githubButton.y,
+        githubButton.x,
+        githubButton.y + githubButton.height
+      );
+      gradient3.addColorStop(0, "#4a5568");
+      gradient3.addColorStop(1, "#2d3748");
+      ctx.fillStyle = gradient3;
+      ctx.fillRect(
+        githubButton.x,
+        githubButton.y,
+        githubButton.width,
+        githubButton.height
+      );
+
+      ctx.strokeStyle = "#718096";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(
+        githubButton.x,
+        githubButton.y,
+        githubButton.width,
+        githubButton.height
+      );
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 28px Arial";
+      ctx.fillText("📁 Source Code", canvas.width / 2, githubButton.y + 35);
+      ctx.font = "18px Arial";
+      ctx.fillStyle = "#e2e8f0";
+      ctx.fillText("GitHub Repository", canvas.width / 2, githubButton.y + 60);
+    }
   } else if (type === "back-cover") {
     // Back cover
     ctx.fillStyle = "#050709";
@@ -401,14 +422,14 @@ const createTextTexture = (content, type, pageData) => {
     ctx.font = "32px Arial";
     ctx.textAlign = "left";
     const contactInfo = [
-      "📧 vivek@example.com",
-      "💼 linkedin.com/in/vivekpandit",
-      "🐙 github.com/vivekpandit",
-      "🌐 vivekpandit.dev",
+      "📧 vivek.pandit1499@gmail.com",
+      "💼 linkedin.com/in/vivek1499",
+      "🐙 github.com/Vivek-1499",
+      "🌐 vivek1499-portfolio.vercel.app",
     ];
 
     contactInfo.forEach((line, i) => {
-      ctx.fillText(line, 150, 350 + i * 60);
+      ctx.fillText(line, 100, 350 + i * 60);
     });
   } else if (type === "back-cover-final") {
     // Final back cover
@@ -429,7 +450,9 @@ const createTextTexture = (content, type, pageData) => {
     ctx.fillText("Full Stack Developer", canvas.width / 2, 520);
   }
 
-  return new CanvasTexture(canvas);
+  const texture = new CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
 };
 
 const Page = ({
@@ -448,7 +471,6 @@ const Page = ({
   const skinnedMeshRef = useRef();
   const navigate = useNavigate();
   const [highlighted, setHighLighted] = useState(false);
-  const [isHtmlHovered, setIsHtmlHovered] = useState(false); // State to track hover over HTML
 
   const frontTexture = useMemo(() => {
     return createTextTexture(front, front, pageData);
@@ -558,42 +580,78 @@ const Page = ({
   const [_, setPage] = useAtom(pageAtom);
   useCursor(highlighted);
 
-  // Handle link clicks
-  const handleProjectDetailsClick = (e, projectId) => {
-    e.stopPropagation();
-    navigate(`/project/${projectId}`);
-  };
-
-  const handleLiveDemoClick = (e, url) => {
-    e.stopPropagation();
-    if (url) {
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-  };
-
-  const handleGithubClick = (e, url) => {
-    e.stopPropagation();
-    if (url) {
-      window.open(url, "_blank", "noopener,noreferrer");
-    } else {
-      window.open(
-        "https://github.com/vivekpandit",
-        "_blank",
-        "noopener,noreferrer"
-      );
-    }
-  };
-
   const handlePageClick = (e) => {
     e.stopPropagation();
-    // If hovering over the HTML links, don't turn the page.
-    if (isHtmlHovered) {
+
+    const uv = e.uv;
+    if (!uv) {
+      setPage(opened ? number : number + 1);
       return;
     }
+
+    // Flip coordinates to match canvas drawing
+    const canvasX = (1 - uv.x) * 1024;
+    const canvasY = (1 - uv.y) * 1024;
+
+    // --- INTERACTION LOGIC FOR PROJECT PAGES (RIGHT SIDE) ---
+    if (front.endsWith("-image") && !opened && pageData?.project) {
+      const { details, demo, github } = projectButtonLayout;
+
+      // Details Button Click
+      if (
+        canvasY >= details.y &&
+        canvasY <= details.y + details.height &&
+        canvasX >= details.x &&
+        canvasX <= details.x + details.width
+      ) {
+        navigate(`/project/${pageData.project.id}`);
+        return; // Prevent page turn
+      }
+
+      // Live Demo Button Click
+      if (
+        pageData.project.liveUrl &&
+        canvasY >= demo.y &&
+        canvasY <= demo.y + demo.height &&
+        canvasX >= demo.x &&
+        canvasX <= demo.x + demo.width
+      ) {
+        window.open(pageData.project.liveUrl, "_blank", "noopener,noreferrer");
+        return; // Prevent page turn
+      }
+
+      // GitHub Button Click
+      if (
+        pageData.project.githubUrl &&
+        canvasY >= github.y &&
+        canvasY <= github.y + github.height &&
+        canvasX >= github.x &&
+        canvasX <= github.x + github.width
+      ) {
+        window.open(
+          pageData.project.githubUrl,
+          "_blank",
+          "noopener,noreferrer"
+        );
+        return; // Prevent page turn
+      }
+    }
+
+    // --- INTERACTION LOGIC FOR CONTACT PAGE (LEFT SIDE, INSIDE BACK COVER) ---
+    if (front === "contact-info" && !opened) {
+      for (const key in contactLayout) {
+        const link = contactLayout[key];
+        if (canvasY >= link.y && canvasY <= link.y + link.height) {
+          window.open(link.url, "_blank", "noopener,noreferrer");
+          return; // Prevent page turn
+        }
+      }
+    }
+
+    // If no button/link was clicked, turn the page
     setPage(opened ? number : number + 1);
     setHighLighted(false);
   };
-
   return (
     <group
       {...props}
@@ -611,54 +669,7 @@ const Page = ({
         object={manualSkinnedMesh}
         ref={skinnedMeshRef}
         position-z={-number * PAGE_DEPTH + page * PAGE_DEPTH}
-        pointerEvents="none"
       />
-
-      {/* Interactive links for project pages */}
-      {front.includes("-image") && pageData?.project && opened && (
-        <Html
-          transform
-          distanceFactor={1.5}
-          position={[1.2, -0.2, 0.005]}
-          rotation={[0, 0, 0]}
-          style={{
-            zIndex: 10000,
-          }}
-          occlude={false}
-          wrapperClass="book-links-wrapper">
-          <div
-            className="flex flex-col gap-1 bg-black/90 backdrop-blur-sm p-2 rounded-md border border-white/40 shadow-xl min-w-[120px] max-w-[120px]"
-            onPointerEnter={() => setIsHtmlHovered(true)}
-            onPointerLeave={() => setIsHtmlHovered(false)}>
-            <h4 className="text-white font-semibold text-xs text-center border-b border-white/30 pb-1 mb-1">
-              {pageData.project.title}
-            </h4>
-            <button
-              onClick={(e) => handleProjectDetailsClick(e, pageData.project.id)}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors cursor-pointer">
-              📑 Details
-            </button>
-            {pageData.project.githubUrl && (
-              <button
-                onClick={(e) =>
-                  handleGithubClick(e, pageData.project.githubUrl)
-                }
-                className="w-full bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors cursor-pointer">
-                📁 Code
-              </button>
-            )}
-            {pageData.project.liveUrl && (
-              <button
-                onClick={(e) =>
-                  handleLiveDemoClick(e, pageData.project.liveUrl)
-                }
-                className="w-full bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors cursor-pointer">
-                🌐 Demo
-              </button>
-            )}
-          </div>
-        </Html>
-      )}
     </group>
   );
 };
