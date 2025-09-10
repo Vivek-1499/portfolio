@@ -99,8 +99,58 @@ const contactLayout = {
   },
 };
 
+// Function to load and draw image on canvas
+const loadImageOnCanvas = (ctx, imagePath, x, y, width, height) => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    img.onload = () => {
+      try {
+        ctx.drawImage(img, x, y, width, height);
+        resolve(true);
+      } catch (error) {
+        console.log('Error drawing image:', error);
+        // Draw placeholder if image fails
+        drawImagePlaceholder(ctx, x, y, width, height, imagePath);
+        resolve(false);
+      }
+    };
+    
+    img.onerror = () => {
+      console.log('Failed to load image:', imagePath);
+      // Draw placeholder if image fails to load
+      drawImagePlaceholder(ctx, x, y, width, height, imagePath);
+      resolve(false);
+    };
+    
+    img.src = imagePath;
+  });
+};
+
+// Function to draw image placeholder
+const drawImagePlaceholder = (ctx, x, y, width, height, title = "Project Image") => {
+  // Placeholder background
+  ctx.fillStyle = "#4a5568";
+  ctx.fillRect(x, y, width, height);
+  ctx.strokeStyle = "#718096";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x, y, width, height);
+
+  // Placeholder text
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 24px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("Project Screenshot", x + width / 2, y + height / 2 - 10);
+  
+  ctx.fillStyle = "#a0aec0";
+  ctx.font = "18px Arial";
+  const projectTitle = title.replace('/images/', '').replace('.png', '').replace('.jpg', '');
+  ctx.fillText(projectTitle, x + width / 2, y + height / 2 + 20);
+};
+
 // Function to create text texture with embedded clickable areas
-const createTextTexture = (content, type, pageData) => {
+const createTextTexture = async (content, type, pageData) => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   canvas.width = 1024;
@@ -113,7 +163,7 @@ const createTextTexture = (content, type, pageData) => {
   if (type === "cover") {
     // Cover page design - darker
     ctx.fillStyle = "#050709";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.width);
 
     // Title
     ctx.fillStyle = "#ffffff";
@@ -231,14 +281,14 @@ const createTextTexture = (content, type, pageData) => {
     type.includes("-image") &&
     pageData?.project
   ) {
-    // Project image page (right side) - WITH EMBEDDED INTERACTIVE BUTTONS
+    // Project image page (right side) - WITH ACTUAL IMAGE AND INTERACTIVE BUTTONS
     const project = pageData.project;
 
     // Background
     ctx.fillStyle = "#050709";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Image placeholder area
+    // Image area
     const imageArea = {
       x: 60,
       y: 60,
@@ -246,29 +296,17 @@ const createTextTexture = (content, type, pageData) => {
       height: 400,
     };
 
-    // Image placeholder
-    ctx.fillStyle = "#4a5568";
-    ctx.fillRect(imageArea.x, imageArea.y, imageArea.width, imageArea.height);
-    ctx.strokeStyle = "#718096";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(imageArea.x, imageArea.y, imageArea.width, imageArea.height);
-
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 32px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText(
-      "Project Screenshot",
-      canvas.width / 2,
-      imageArea.y + imageArea.height / 2 - 20
-    );
-
-    ctx.fillStyle = "#a0aec0";
-    ctx.font = "24px Arial";
-    ctx.fillText(
-      project.title,
-      canvas.width / 2,
-      imageArea.y + imageArea.height / 2 + 20
-    );
+    // Try to load actual project image
+    if (project.image) {
+      try {
+        await loadImageOnCanvas(ctx, project.image, imageArea.x, imageArea.y, imageArea.width, imageArea.height);
+      } catch (error) {
+        console.log('Error loading project image:', error);
+        drawImagePlaceholder(ctx, imageArea.x, imageArea.y, imageArea.width, imageArea.height, project.title);
+      }
+    } else {
+      drawImagePlaceholder(ctx, imageArea.x, imageArea.y, imageArea.width, imageArea.height, project.title);
+    }
 
     let yPos = imageArea.y + imageArea.height + 80;
 
@@ -471,16 +509,35 @@ const Page = ({
   const skinnedMeshRef = useRef();
   const navigate = useNavigate();
   const [highlighted, setHighLighted] = useState(false);
+  const [texturesLoaded, setTexturesLoaded] = useState(false);
 
   const frontTexture = useMemo(() => {
-    return createTextTexture(front, front, pageData);
+    let texturePromise;
+    if (front.includes("-image")) {
+      texturePromise = createTextTexture(front, front, pageData);
+    } else {
+      texturePromise = Promise.resolve(createTextTexture(front, front, pageData));
+    }
+    
+    texturePromise.then(() => setTexturesLoaded(true));
+    return texturePromise;
   }, [front, pageData]);
 
   const backTexture = useMemo(() => {
-    return createTextTexture(back, back, {
-      ...pageData,
-      project: pageData?.nextProject || pageData?.project,
-    });
+    let texturePromise;
+    if (back.includes("-image")) {
+      texturePromise = createTextTexture(back, back, {
+        ...pageData,
+        project: pageData?.nextProject || pageData?.project,
+      });
+    } else {
+      texturePromise = Promise.resolve(createTextTexture(back, back, {
+        ...pageData,
+        project: pageData?.nextProject || pageData?.project,
+      }));
+    }
+    
+    return texturePromise;
   }, [back, pageData]);
 
   const manualSkinnedMesh = useMemo(() => {
@@ -494,19 +551,28 @@ const Page = ({
       }
     }
     const skeleton = new Skeleton(bones);
+    
+    // Create materials with promises for textures
     const materials = [
       ...pageMaterials,
       new MeshStandardMaterial({
         color: whiteColor,
-        map: frontTexture,
         roughness: 0.1,
       }),
       new MeshStandardMaterial({
         color: whiteColor,
-        map: backTexture,
         roughness: 0.1,
       }),
     ];
+
+    // Load textures asynchronously
+    Promise.all([frontTexture, backTexture]).then(([front, back]) => {
+      materials[4].map = front;
+      materials[5].map = back;
+      materials[4].needsUpdate = true;
+      materials[5].needsUpdate = true;
+    });
+
     const mesh = new SkinnedMesh(pageGeometry, materials);
     mesh.receiveShadow = true;
     mesh.frustumCulled = false;
@@ -652,6 +718,7 @@ const Page = ({
     setPage(opened ? number : number + 1);
     setHighLighted(false);
   };
+  
   return (
     <group
       {...props}

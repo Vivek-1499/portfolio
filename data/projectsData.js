@@ -49,21 +49,4 @@ export const projectsData = [
   githubUrl: "https://github.com/Vivek-1499/CodeGenius",
   image: "/images/cg.png"
 },
-  {
-    id: 4,
-    title: "Social Media Dashboard",
-    description: "Analytics dashboard for social media management with data visualization and automated reporting features.",
-    technologies: ["Python", "Django", "React", "D3.js", "PostgreSQL"],
-    features: [
-      "Multi-platform analytics",
-      "Automated reporting",
-      "Custom data visualizations",
-      "User engagement tracking",
-      "Export functionality"
-    ],
-    moreUrl: "/project/4",
-    liveUrl: "https://your-social-demo.com",
-    githubUrl: "https://github.com/vivekpandit/social-media-dashboard",
-    image: "/images/image4.png"
-  },
 ];

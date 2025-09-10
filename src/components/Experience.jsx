@@ -9,7 +9,6 @@ import {
 import { Avatar } from "./Avatar";
 import ProjectBook from "./ProjectBook";
 import * as THREE from "three";
-import FloatingProjectLinks from "./FloatingProjectLinks";
 import { BookProjectLinks } from "./ProjectBookLinks";
 
 export const Experience = ({ section, currentPage }) => {

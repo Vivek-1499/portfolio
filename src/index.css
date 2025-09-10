@@ -37,3 +37,7 @@ body,
 .shine-effect:hover::before {
   left: 125%; /* Animate to off-screen to the right */
 }
+.project-detail-page {
+  height: 100vh;
+  overflow-y: auto;
+}

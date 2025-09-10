@@ -9,7 +9,6 @@ import { useAtom } from "jotai";
 import { pageAtom } from "./components/UI";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProjectDetails from "./components/ProjectDetails";
-import FloatingProjectLinks from "./components/FloatingProjectLinks";
 import SaveiorDetails from "./components/SaveiorDetails";
 import SoMoDetails from "./components/SoMoDetsils";
 import CodeGeniusDetails from "./components/CodeGeniusDetails";
@@ -64,7 +63,6 @@ function Home() {
     <>
       <Menu onSectionChange={setSection} section={section} />   
 
-      {/* Removed FloatingProjectLinks since links are now embedded in the book */}
 
       <Canvas
         shadows

@@ -51,7 +51,7 @@ export default function SaveiorDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-y-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-y-auto project-detail-page">
       {/* Shared Navigation Header */}
       <SharedNavigation currentProject="Saveior" />
 

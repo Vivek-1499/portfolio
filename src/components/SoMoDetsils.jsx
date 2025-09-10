@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaExternalLinkAlt, FaGithub, FaLightbulb, FaCode, FaUsers, FaComments, FaMoon } from "react-icons/fa";
+import SharedNavigation from "./SharedNavigation";
 
 export default function SoMoDetails() {
   const navigate = useNavigate();
@@ -49,20 +50,13 @@ export default function SoMoDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 project-detail-page">
       {/* Navigation */}
-      <nav className="p-6">
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-white/80 hover:text-white transition-colors group"
-        >
-          <FaArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          Back to Portfolio
-        </button>
-      </nav>
+      <SharedNavigation currentProject="SoMo" />
+      
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 pb-12">
+      <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
         {/* Header Section */}
         <div className="text-center mb-16">
           <h1 className="text-6xl font-bold text-white mb-6 bg-gradient-to-r from-pink-400 to-violet-600 bg-clip-text text-transparent">

@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaExternalLinkAlt, FaGithub, FaLightbulb, FaCode, FaGraduationCap, FaQuestionCircle, FaUser } from "react-icons/fa";
+import Menu from "./Menu";
+import SharedNavigation from "./SharedNavigation";
 
 export default function CodeGeniusDetails() {
   const navigate = useNavigate();
+  const [section, setSection] = useState(0);
 
   const project = {
     id: 3,
@@ -47,20 +50,11 @@ export default function CodeGeniusDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      {/* Navigation */}
-      <nav className="p-6">
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-white/80 hover:text-white transition-colors group"
-        >
-          <FaArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          Back to Portfolio
-        </button>
-      </nav>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 project-detail-page">
+      <SharedNavigation currentProject="CodeDenius" />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 pb-12">
+      <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
         {/* Header Section */}
         <div className="text-center mb-16">
           <h1 className="text-6xl font-bold text-white mb-6 bg-gradient-to-r from-orange-400 to-red-600 bg-clip-text text-transparent">
@@ -113,7 +107,7 @@ export default function CodeGeniusDetails() {
                 ctx.font = 'bold 48px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText(project.title, canvas.width / 2, canvas.height / 2 - 20);
-                
+
                 ctx.fillStyle = '#a0aec0';
                 ctx.font = '24px Arial';
                 ctx.fillText('E-Learning Platform', canvas.width / 2, canvas.height / 2 + 20);
@@ -154,52 +148,28 @@ export default function CodeGeniusDetails() {
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
               <div className="flex items-center gap-3 mb-8">
                 <FaCode className="text-purple-400" size={28} />
-                <h2 className="text-3xl font-bold text-white">Technology Stack</h2>
+                <h2 className="text-3xl font-bold text-white">Tech Stack</h2>
               </div>
-              <div className="grid sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-center">
                 {Object.entries(project.techStack).map(([category, techs]) => (
-                  <div key={category} className="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <h3 className="text-lg font-semibold text-purple-300 mb-4">{category}</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {techs.map((tech, index) => (
-                        <span
-                          key={index}
-                          className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm font-medium border border-purple-500/30"
-                        >
+                  <div key={category}>
+                    <h4 className="text-lg font-semibold text-white/80 mb-3">{category}</h4>
+                    <ul className="space-y-2">
+                      {techs.map((tech, i) => (
+                        <li key={i} className="bg-white/5 border border-white/10 px-3 py-1 rounded-md text-gray-300 text-sm">
                           {tech}
-                        </span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 ))}
-              </div>
-            </div>
-
-            {/* Project Overview */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
-              <h2 className="text-3xl font-bold text-white mb-6">Project Overview</h2>
-              <div className="text-gray-300 space-y-4 text-lg leading-relaxed">
-                <p>
-                  CodeGenius represents my early exploration into educational technology, focusing on making programming 
-                  education more accessible and interactive. The platform combines structured learning modules with 
-                  community-driven support systems.
-                </p>
-                <p>
-                  Built with core web technologies (PHP, HTML, CSS, JavaScript), this project demonstrates fundamental 
-                  full-stack development skills and user-centered design principles. The platform emphasizes practical 
-                  learning through hands-on coding exercises and peer collaboration.
-                </p>
-                <p>
-                  The real-time help system creates a supportive learning environment where students can get immediate 
-                  assistance with their code, fostering a collaborative community of learners and experienced developers.
-                </p>
               </div>
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-8">
-            {/* Quick Stats */}
+          <div className="lg:col-span-1 space-y-8">
+            {/* Project Stats */}
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
               <h3 className="text-xl font-semibold text-white mb-6">Project Stats</h3>
               <div className="space-y-4">
@@ -238,27 +208,6 @@ export default function CodeGeniusDetails() {
                   <span className="text-purple-400 font-medium">Educational Focus</span>
                   <p className="text-gray-300 mt-1">Structured learning paths and progress tracking</p>
                 </div>
-              </div>
-            </div>
-
-            {/* Related Projects */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-              <h3 className="text-xl font-semibold text-white mb-6">Related Projects</h3>
-              <div className="space-y-3">
-                <button
-                  onClick={() => navigate('/project/1')}
-                  className="block w-full text-left p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
-                >
-                  <div className="text-white font-medium">Saveior</div>
-                  <div className="text-gray-400 text-sm mt-1">Finance Management</div>
-                </button>
-                <button
-                  onClick={() => navigate('/project/2')}
-                  className="block w-full text-left p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
-                >
-                  <div className="text-white font-medium">SoMo</div>
-                  <div className="text-gray-400 text-sm mt-1">Social Media Platform</div>
-                </button>
               </div>
             </div>
           </div>
