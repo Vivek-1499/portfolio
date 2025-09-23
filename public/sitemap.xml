@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+   <!-- Main Page -->
+   <url>
+      <loc>https://vivek1499-portfolio.vercel.app/</loc>
+      <lastmod>2025-09-23</lastmod>
+      <priority>1.00</priority>
+   </url>
+
+   <!-- Project Book Pages -->
+   <url>
+      <loc>https://vivek1499-portfolio.vercel.app/project/1</loc>
+      <lastmod>2025-09-23</lastmod>
+      <priority>0.80</priority>
+   </url>
+   <url>
+      <loc>https://vivek1499-portfolio.vercel.app/project/2</loc>
+      <lastmod>2025-09-23</lastmod>
+      <priority>0.80</priority>
+   </url>
+   <url>
+      <loc>https://vivek1499-portfolio.vercel.app/project/3</loc>
+      <lastmod>2025-09-23</lastmod>
+      <priority>0.80</priority>
+   </url>
+
+   <!-- More projects as needed -->
+</urlset>
