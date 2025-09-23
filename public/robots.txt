@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://vivek1499-portfolio.vercel.app/sitemap.xml
