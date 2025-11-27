@@ -1,4 +1,7 @@
 import { motion } from "framer-motion";
+import { useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
+
 import {
   DiCss3Full,
   DiHtml5,
@@ -8,7 +11,13 @@ import {
   DiPython,
   DiReact,
 } from "react-icons/di";
-import { FaDatabase, FaGitAlt, FaGithub, FaFigma, FaMousePointer } from "react-icons/fa";
+import {
+  FaDatabase,
+  FaGitAlt,
+  FaGithub,
+  FaFigma,
+  FaMousePointer,
+} from "react-icons/fa";
 
 const languages = [
   { name: "Java", icon: DiJava },
@@ -214,11 +223,45 @@ function ProjectsSection() {
 }
 
 const ContactSection = () => {
+  const formRef = useRef();
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus(null)
+
+    emailjs
+      .sendForm(
+        "service_9rbaajo",
+        "template_zymi53l",
+        formRef.current,
+        "Q--3gFej8wEKSg2J8"
+      )
+      .then(
+        (result) => {
+          setLoading(false);
+          setStatus("success")
+          e.target.reset();
+
+          setTimeout(()=>{
+            setStatus(null);
+          },1000)
+        },
+        (error) => {
+          setLoading(false);
+          console.error(error);
+          setStatus("error");
+        }
+      );
+  };
   return (
     <Section sectionId="contact">
       <div className="w-full flex justify-center">
         <form
-          action=""
+          ref={formRef}
+          onSubmit={handleSubmit}
           className="bg-black/50 backdrop-blur-sm px-10 py-8 rounded-lg border border-white/20 relative left-40">
           {" "}
           <h2 className="text-3xl font-extrabold text-indigo-400 mb-6">
@@ -232,6 +275,8 @@ const ContactSection = () => {
               <input
                 type="text"
                 id="name"
+                name="name"
+                required
                 className="border border-white/20 focus:border-indigo-400 bg-white/10 backdrop-blur-sm rounded-md px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
                 placeholder="Your name"
               />
@@ -243,6 +288,8 @@ const ContactSection = () => {
               <input
                 type="email"
                 id="email"
+                name="email"
+                required
                 className="border border-white/20 focus:border-indigo-400 bg-white/10 backdrop-blur-sm rounded-md px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
                 placeholder="your.email@example.com"
               />
@@ -254,13 +301,20 @@ const ContactSection = () => {
               <textarea
                 id="message"
                 rows="4"
+                name="message"
+                required
                 className="border border-white/20 focus:border-indigo-400 bg-white/10 backdrop-blur-sm rounded-md px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 resize-none"
                 placeholder="Your message here..."></textarea>
             </div>
             <button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 transition duration-300 text-white py-3 px-6 rounded-lg mt-4 font-medium shadow-lg hover:shadow-xl">
-              Send Message
+              disabled={loading}
+              className={`w-full ${
+                loading
+                  ? "bg-indigo-400 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700"
+              } transition duration-300 text-white py-3 px-6 rounded-lg mt-4 font-medium shadow-lg hover:shadow-xl`}>
+              {loading ? "Sending..." : "Send Message"}
             </button>
           </div>
         </form>
